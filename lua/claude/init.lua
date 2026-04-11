@@ -227,6 +227,24 @@ function M.install_hooks()
     table.insert(existing.hooks.PreToolUse, { hooks = { hook_entry } })
   end
 
+  -- SessionEnd
+  existing.hooks.SessionEnd = existing.hooks.SessionEnd or {}
+  local has_end = false
+  for _, entry in ipairs(existing.hooks.SessionEnd) do
+    for _, h in ipairs(entry.hooks or {}) do
+      if h.command == hook_path then
+        has_end = true
+        break
+      end
+    end
+    if has_end then
+      break
+    end
+  end
+  if not has_end then
+    table.insert(existing.hooks.SessionEnd, { hooks = { hook_entry } })
+  end
+
   -- Write back
   local json = vim.fn.json_encode(existing)
   -- Pretty-print via python3 if available, otherwise write minified
