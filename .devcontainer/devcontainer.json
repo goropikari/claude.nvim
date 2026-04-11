@@ -1,0 +1,11 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+  "name": "Ubuntu",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/goropikari/devcontainer-feature/neovim:1": {},
+    "ghcr.io/goropikari/devcontainer-feature/tree-sitter:1": {}
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh"
+}
