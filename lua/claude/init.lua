@@ -14,6 +14,30 @@ local _opts = {
   terminals = "all",
 }
 
+local _watcher = nil
+
+local function start_watcher()
+  if _watcher then
+    _watcher:stop()
+  end
+
+  local dir = session_mod.state_dir()
+  vim.fn.mkdir(dir, "p")
+
+  _watcher = vim.uv.new_fs_event()
+  _watcher:start(
+    dir,
+    {},
+    vim.schedule_wrap(function(err, filename, events)
+      if err then
+        return
+      end
+      require("claude.statusline").invalidate_cache()
+      vim.cmd("redrawstatus")
+    end)
+  )
+end
+
 --- Open a snacks.nvim picker listing all known Claude Code sessions,
 --- matched to terminals.nvim terminal buffers by cwd.
 --- Pressing Enter jumps to the matched terminal buffer.
@@ -272,6 +296,7 @@ function M.setup(opts)
   if opts.statusline then
     require("claude.statusline").setup(opts.statusline)
   end
+  start_watcher()
 end
 
 M.statusline_summary = function()

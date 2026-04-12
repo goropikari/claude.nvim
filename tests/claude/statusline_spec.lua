@@ -111,6 +111,45 @@ describe("statusline", function()
     end)
   end)
 
+  describe("caching", function()
+    it("uses cached counts when available and not expired", function()
+      local call_count = 0
+      local sessions = { a = make_sess("a", "waiting") }
+      package.loaded["claude.session"] = {
+        load = function()
+          call_count = call_count + 1
+          return sessions
+        end,
+      }
+      package.loaded["claude.statusline"] = nil
+      local sl = require("claude.statusline")
+      sl.setup({ cache_ttl = 10 })
+
+      sl.counts()
+      sl.counts()
+      assert.equal(1, call_count)
+    end)
+
+    it("invalidates cache when invalidate_cache is called", function()
+      local call_count = 0
+      local sessions = { a = make_sess("a", "waiting") }
+      package.loaded["claude.session"] = {
+        load = function()
+          call_count = call_count + 1
+          return sessions
+        end,
+      }
+      package.loaded["claude.statusline"] = nil
+      local sl = require("claude.statusline")
+      sl.setup({ cache_ttl = 10 })
+
+      sl.counts()
+      sl.invalidate_cache()
+      sl.counts()
+      assert.equal(2, call_count)
+    end)
+  end)
+
   describe("setup", function()
     it("custom icons appear in output", function()
       local sl = load_statusline({ a = make_sess("a", "waiting") })

@@ -31,6 +31,11 @@ end
 --- @param opts {icons?:{waiting:string,working:string,idle:string}, cache_ttl?:integer}
 function M.setup(opts)
   _opts = vim.tbl_deep_extend("force", _opts, opts or {})
+  M.invalidate_cache()
+end
+
+--- Invalidate the statusline cache.
+function M.invalidate_cache()
   _cache = { counts = nil, ts = 0 }
 end
 
