@@ -1,2 +1,5 @@
 .dev/
 .claude/settings.local.json
+
+.codex
+nvim.log

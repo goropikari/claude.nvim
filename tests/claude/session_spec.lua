@@ -76,3 +76,26 @@ describe("session.load", function()
     assert.same({}, session.load(tmpdir))
   end)
 end)
+
+describe("session time helpers", function()
+  it("formats short relative ages in seconds", function()
+    assert.equal("45s ago", session.relative_age(955, 1000))
+  end)
+
+  it("formats relative ages in minutes", function()
+    assert.equal("2m ago", session.relative_age(880, 1000))
+  end)
+
+  it("formats relative ages in hours", function()
+    assert.equal("2h ago", session.relative_age(1, 7201))
+  end)
+
+  it("formats absolute timestamps", function()
+    assert.equal(os.date("%Y-%m-%d %H:%M:%S", 1), session.absolute_time(1))
+  end)
+
+  it("returns unknown for invalid timestamps", function()
+    assert.equal("unknown", session.relative_age(nil, 1000))
+    assert.equal("unknown", session.absolute_time(nil))
+  end)
+end)

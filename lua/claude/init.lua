@@ -45,6 +45,7 @@ function M.pick()
   local sessions = session_mod.load()
   local terminals = terminal_mod.get_all()
   local items = {}
+  local status_order = { waiting = 1, working = 2, idle = 3 }
 
   for session_id, sess in pairs(sessions) do
     local matched = terminal_mod.find_by_session(terminals, sess)
@@ -67,6 +68,8 @@ function M.pick()
           session_id = session_id,
           status = sess.status,
           cwd = sess.cwd,
+          updated_at = sess.updated_at,
+          age = session_mod.relative_age(sess.updated_at),
           buf = term.bufnr,
           term_id = term.id,
           term_title = term.title,
@@ -78,6 +81,8 @@ function M.pick()
         session_id = session_id,
         status = sess.status,
         cwd = sess.cwd,
+        updated_at = sess.updated_at,
+        age = session_mod.relative_age(sess.updated_at),
         buf = nil,
       })
     end
@@ -87,6 +92,18 @@ function M.pick()
     vim.notify("No active Claude Code sessions found.", vim.log.levels.INFO, { title = "ClaudeStatus" })
     return
   end
+
+  table.sort(items, function(a, b)
+    local a_status = status_order[a.status] or math.huge
+    local b_status = status_order[b.status] or math.huge
+    if a_status ~= b_status then
+      return a_status < b_status
+    end
+    if a.updated_at ~= b.updated_at then
+      return (a.updated_at or 0) > (b.updated_at or 0)
+    end
+    return a.session_id < b.session_id
+  end)
 
   Snacks.picker({
     title = "Claude Code Sessions",
@@ -100,7 +117,8 @@ function M.pick()
       return {
         { icon_info[1] .. " ", icon_info[2] },
         { vim.fn.fnamemodify(item.cwd, ":~") .. " ", "Normal" },
-        { short_id, "Comment" },
+        { short_id .. " ", "Comment" },
+        { item.age .. " ", "Directory" },
         { bufnr_str, "Special" },
       }
     end,
@@ -108,7 +126,15 @@ function M.pick()
       if ctx.item.buf and vim.api.nvim_buf_is_valid(ctx.item.buf) then
         ctx.preview:set_buf(ctx.item.buf)
       else
-        ctx.preview:set_lines({ "(no terminal buffer)" })
+        ctx.preview:set_lines({
+          "Session: " .. ctx.item.session_id,
+          "Status:  " .. ctx.item.status,
+          "Cwd:     " .. ctx.item.cwd,
+          "Updated: " .. session_mod.relative_age(ctx.item.updated_at) .. " (" .. session_mod.absolute_time(
+            ctx.item.updated_at
+          ) .. ")",
+          "Buffer:  (no terminal buffer)",
+        })
       end
     end,
     confirm = function(picker)

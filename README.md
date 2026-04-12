@@ -11,12 +11,13 @@ Sessions are matched to [terminals.nvim](https://github.com/goropikari/terminals
 **Picker (`:ClaudeStatus`)**
 
 ```
-⏳  ~/projects/api    a1b2c3d4  buf:5      ← waiting for approval
-⚙   ~/projects/web    e5f6g7h8  buf:8      ← working
-✓   ~/projects/infra  i9j0k1l2  (no terminal)
+⏳  ~/projects/api    a1b2c3d4  12s ago  buf:5      ← waiting for approval
+⚙   ~/projects/web    e5f6g7h8  3m ago   buf:8      ← working
+✓   ~/projects/infra  i9j0k1l2  9m ago   (no terminal)
 ```
 
 Press `<CR>` to jump to the matching terminal in terminals.nvim.
+Sessions are sorted by status (`waiting` → `working` → `idle`) and then by most recent update.
 
 **Statusline**
 
