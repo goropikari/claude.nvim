@@ -1,5 +1,7 @@
 # claude.nvim
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/goropikari/claude.nvim)
+
 A Neovim plugin that monitors [Claude Code](https://claude.ai/code) session states — waiting for approval, working, or idle — across multiple terminal buffers.
 
 Sessions are matched to [terminals.nvim](https://github.com/goropikari/terminals.nvim) terminal buffers via process ancestry, and listed in a [snacks.nvim](https://github.com/folke/snacks.nvim) picker. A statusline API lets you surface session state anywhere in your UI.
